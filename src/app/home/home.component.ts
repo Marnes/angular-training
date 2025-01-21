@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { HousingLocationComponent } from "../housing-location/housing-location.component";
+import { HousingService } from '../housing.service';
 import { HousingLocation } from '../housinglocation';
 
 @Component({
@@ -12,15 +13,10 @@ import { HousingLocation } from '../housinglocation';
   styleUrl: './home.component.scss'
 })
 export class HomeComponent {
-  readonly baseUrl = 'https://angular.dev/assets/images/tutorials/common';
-  housingLocation: HousingLocation = {
-    id: 9999,
-    name: 'Test Home',
-    city: 'Test city',
-    state: 'ST',
-    photo: `${this.baseUrl}/example-house.jpg`,
-    availableUnits: 99,
-    wifi: true,
-    laundry: false,
-  };
+  housingService: HousingService = inject(HousingService);
+  housingLocation: HousingLocation;
+
+  constructor() {
+    this.housingLocation = this.housingService.getAllHousingLocations();
+  }
 }
