@@ -2,21 +2,23 @@ import { Component, inject } from '@angular/core';
 import { HousingLocationComponent } from "../housing-location/housing-location.component";
 import { HousingService } from '../housing.service';
 import { HousingLocation } from '../housinglocation';
+import { CommonModule } from '@angular/common';
 
 @Component({
   standalone: true,
   selector: 'app-home',
   imports: [
-    HousingLocationComponent
+    HousingLocationComponent,
+    CommonModule
   ],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss'
 })
 export class HomeComponent {
   housingService: HousingService = inject(HousingService);
-  housingLocation: HousingLocation;
+  housingLocations: HousingLocation[] = [];
 
   constructor() {
-    this.housingLocation = this.housingService.getAllHousingLocations();
+    this.housingLocations = this.housingService.getAllHousingLocations();
   }
 }
