@@ -1,9 +1,12 @@
 import { Component } from '@angular/core';
+import { HousingLocationComponent } from "../housing-location/housing-location.component";
 
 @Component({
   standalone: true,
   selector: 'app-home',
-  imports: [],
+  imports: [
+    HousingLocationComponent
+  ],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss'
 })
