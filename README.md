@@ -266,3 +266,45 @@ bootstrapApplication(AppComponent, {
   </header>
 </a>
 ```
+
+## Exercise 7
+
+1. Generate a new component called DetailsComponent `ng generate component details --standalone`
+2. Register a new route `details/:id` that will render the DetailsComponent
+```typescript
+const routeConfig: Routes = [
+  ...
+  {
+    path: 'details/:id',
+    component: DetailsComponent,
+    title: 'Home details',
+  },
+];
+```
+3. Add an anchor to `housing-location.component.html` to navigate to the details page of a housing location.
+```angular2html
+<a [routerLink]="['details', housingLocation.id]">
+```
+4. Configure your `bootstrapApplication` to inject path variables into your components as `@Input` with `withComponentInputBinding()` 
+```typescript
+bootstrapApplication(AppComponent, {
+  providers: [
+    provideProtractorTestingSupport(),
+    provideRouter(routes, withComponentInputBinding())
+  ]}
+).catch((err) =>console.error(err));
+```
+5. Now the path variable for the housing location will be available as an input. Use this to fetch the specific housing location inside `details.component.ts`
+```typescript
+@Input()
+set id(id: string) {
+  this.housingLocation = this.housingService.getHousingLocation(Number(id));
+}
+```
+6. Add the necessary method to the service to fetch the housing location
+```typescript
+getHousingLocation(id: number): HousingLocation | undefined {
+  return this.housingLocationList.find(location => location.id === id);
+}
+```
+7. Now the entity can be used to display on the template
