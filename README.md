@@ -22,7 +22,7 @@
 
 ## Exercise 1
 1. Generate a new component called *HomeComponent* `ng generate component home --standalone`
-2. Import the HomeComponent in `app.component.ts` 
+2. Import the HomeComponent in `app.component.ts`
 3. Update HTML of `app.component.html` to
 ```angular2html
 <main>
@@ -91,11 +91,11 @@ housingLocation: HousingLocation = {
 
 ## Exercise 4
 1. Generate a *Housing Service* `ng generate service housing`
-2. Add a method `getAllHousingLocations` to the new service, and move the static entity to this new service. 
+2. Add a method `getAllHousingLocations` to the new service, and move the static entity to this new service.
 ```typescript
 housingLocation: HousingLocation = { ... }
 getAllHousingLocations(): HousingLocation {
-    return this.housingLocation;
+  return this.housingLocation;
 }
 ```
 3. Inject this service in your Home Component `home.component.ts`
@@ -104,7 +104,7 @@ housingService: HousingService = inject(HousingService);
 ```
 4. Add a constructor to load the HousingLocation from the service into a field on `home.component.ts`
 ```typescript
-housingLocation: HousingLocation = null;
+housingLocation: HousingLocation;
 
 constructor() {
   this.housingLocation = this.housingService.getAllHousingLocations();
@@ -225,3 +225,86 @@ import {CommonModule} from '@angular/common';
   [housingLocation]="housingLocation"
 ></app-housing-location>
 ```
+
+## Exercise 6
+
+1. Add the RouterModule to your `app.component.ts` imports.
+```typescript
+@Component({
+  standalone: true,
+  selector: 'app-root',
+  imports: [RouterModule, HomeComponent],
+  templateUrl: './app.component.html',
+  styleUrl: './app.component.scss'
+})
+```
+2. Add `<router-outlet></router-outlet>` where the component matching the route should be rendered to `app.component.html`
+3. Configure the home route in `app.routes.ts`
+```typescript
+export const routes: Routes = [
+  {
+    path: '',
+    component: HomeComponent,
+    title: 'Home page',
+  },
+];
+```
+4. Update `bootstrapApplication` to include the routing configuration
+```typescript
+bootstrapApplication(AppComponent, {
+  providers: [
+    provideProtractorTestingSupport(),
+    provideRouter(routes)
+  ]}
+).catch((err) =>console.error(err));
+```
+5. Change the home icon in `app.component.html` to navigate to home
+```angular2html
+<a [routerLink]="['/']">
+  <header class="brand-name">
+    <img class="brand-logo" src="/assets/logo.svg" alt="logo" aria-hidden="true" />
+  </header>
+</a>
+```
+
+## Exercise 7
+
+1. Generate a new component called DetailsComponent `ng generate component details --standalone`
+2. Register a new route `details/:id` that will render the DetailsComponent
+```typescript
+const routeConfig: Routes = [
+  ...
+  {
+    path: 'details/:id',
+    component: DetailsComponent,
+    title: 'Home details',
+  },
+];
+```
+3. Add an anchor to `housing-location.component.html` to navigate to the details page of a housing location.
+```angular2html
+<a [routerLink]="['details', housingLocation.id]">
+```
+4. Configure your `bootstrapApplication` to inject path variables into your components as `@Input` with `withComponentInputBinding()`
+```typescript
+bootstrapApplication(AppComponent, {
+  providers: [
+    provideProtractorTestingSupport(),
+    provideRouter(routes, withComponentInputBinding())
+  ]}
+).catch((err) =>console.error(err));
+```
+5. Now the path variable for the housing location will be available as an input. Use this to fetch the specific housing location inside `details.component.ts`
+```typescript
+@Input()
+set id(id: string) {
+  this.housingLocation = this.housingService.getHousingLocation(Number(id));
+}
+```
+6. Add the necessary method to the service to fetch the housing location
+```typescript
+getHousingLocation(id: number): HousingLocation | undefined {
+  return this.housingLocationList.find(location => location.id === id);
+}
+```
+7. Now the entity can be used to display on the template
